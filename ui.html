@@ -1,17 +1,92 @@
-<h2>Shape Creator</h2>
-<p>Count: <input id="count" type="number" value="5"></p>
-<button id="create">Create</button>
-<button id="cancel">Cancel</button>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    gap: 8px;
+  }
+  textarea {
+    height: 100%;
+  }
+  container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 16px;
+    padding: 16px;
+  }
+</style>
+
+<container>
+  <textarea name="text" id="text" cols="30" rows="10">
+{
+	"Themes": {
+		"tab_activeBackground": {
+			"Dark Modern": "#1f1f1f",
+			"Light Modern": "#ffffff"
+		},
+		"tab_activeBorder": {
+			"Dark Modern": "#1f1f1f",
+			"Light Modern": "#f8f8f8"
+		},
+		"tab_activeBorderTop": {
+			"Dark Modern": "#0078d4",
+			"Light Modern": "#005fb8"
+		},
+		"tab_activeForeground": {
+			"Dark Modern": "#ffffff",
+			"Light Modern": "#3b3b3b"
+		},
+		"tab_border": {
+			"Dark Modern": "#2b2b2b",
+			"Light Modern": "#e5e5e5"
+		},
+		"tab_hoverBackground": {
+			"Dark Modern": "#1f1f1f",
+			"Light Modern": "#ffffff"
+		},
+		"tab_inactiveBackground": {
+			"Dark Modern": "#181818",
+			"Light Modern": "#f8f8f8"
+		},
+		"tab_inactiveForeground": {
+			"Dark Modern": "#9d9d9d",
+			"Light Modern": "#868686"
+		},
+		"tab_lastPinnedBorder": {
+			"Dark Modern": "#cccccc33",
+			"Light Modern": "#d4d4d4"
+		},
+		"tab_unfocusedActiveBorder": {
+			"Dark Modern": "#1f1f1f",
+			"Light Modern": "#f8f8f8"
+		},
+		"tab_unfocusedActiveBorderTop": {
+			"Dark Modern": "#2b2b2b",
+			"Light Modern": "#e5e5e5"
+		},
+		"tab_unfocusedHoverBackground": {
+			"Dark Modern": "#1f1f1f",
+			"Light Modern": "#f8f8f8"
+		}
+	}
+}
+</textarea
+  >
+  <button id="generate">Generate</button>
+</container>
+
 <script>
-
-document.getElementById('create').onclick = () => {
-  const textbox = document.getElementById('count');
-  const count = parseInt(textbox.value, 10);
-  parent.postMessage({ pluginMessage: { type: 'create-shapes', count } }, '*')
-}
-
-document.getElementById('cancel').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
-}
-
+  document.getElementById("generate").onclick = () => {
+    const text = document.getElementById("text");
+    const data = text.value;
+    parent.postMessage({ pluginMessage: { type: "generate", data } }, "*");
+  };
 </script>
