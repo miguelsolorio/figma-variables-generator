@@ -17,43 +17,41 @@ figma.ui.onmessage = msg => {
 
         for (let variable in jsonObject[theme]) {
           console.log(`💎 ${variable}`)
-          const variableItem = figma.variables.createVariable(
-            variable,
-            collection.id,
-            "COLOR"
-          )
+
 
 
           if (jsonObject[theme].hasOwnProperty(variable)) {
+
             let modes = jsonObject[theme][variable]
             let count = 0
-            for(let mode in modes){
-              const color: {
-                r: number;
-                g: number;
-                b: number;
-                a: number;
-              } | any = rgba(modes[mode])
+
+            const variableItem = figma.variables.createVariable(
+              variable,
+              collection.id,
+              "COLOR"
+            )
+
+            for (let mode in modes) {
 
               // // rename first mode
               console.log(collection.modes)
-              if(count == 0){
+              if (count == 0) {
                 console.log('✨ Renaming first mode')
                 let currentModeId = collection.modes[count].modeId
                 collection.renameMode(currentModeId, mode)
-                variableItem.setValueForMode(currentModeId, color)
+                variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
               }
 
               // // add new mode
               console.log(`Count is ${count}`)
-              if(!collection.modes[count]){
+              if (!collection.modes[count]) {
                 console.log('✨ Adding mode')
                 collection.addMode(mode)
 
               }
 
               let currentModeId = collection.modes[count].modeId
-              variableItem.setValueForMode(currentModeId, color)
+              variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
 
               console.log(`↳ 🌓 ${mode}: ${modes[mode]}`)
               count++
