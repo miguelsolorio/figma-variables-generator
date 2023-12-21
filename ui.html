@@ -1,8 +1,88 @@
 <style>
+    /* Vars */
+:root {
+  /* COLORS */
+  /* Accent */
+  --blue: #18a0fb;
+  --purple: #7b61ff;
+  --hot-pink: #ff00ff;
+  --green: #1bc47d;
+  --red: #f24822;
+  --yellow: #ffeb00;
+  /* Basic foreground */
+  --black: #000000;
+  --black8: rgba(0, 0, 0, .8);
+  --black8-opaque: #333333;
+  --black3: rgba(0, 0, 0, .3);
+  --black3-opaque: #B3B3B3;
+  --white: #ffffff;
+  --white8: rgba(255, 255, 255, .8);
+  --white4: rgba(255, 255, 255, .4);
+  /* Basic background */
+  --grey: #f0f0f0;
+  --silver: #e5e5e5;
+  --hud: #222222;
+  --toolbar: #2c2c2c;
+  /* Special */
+  --black1: rgba(0, 0, 0, .1);
+  --blue3: rgba(24, 145, 251, .3);
+  --purple4: rgba(123, 97, 255, .4);
+  --hover-fill: rgba(0, 0, 0, .06);
+  --selection-a: #daebf7;
+  --selection-b: #edf5fa;
+  --white2: rgba(255, 255, 255, .2);
+  /* TYPOGRAPHY */
+  /* Pos = positive applications (black on white) */
+  /* Neg = negative applications (white on black) */
+  /* Font stack */
+  --font-stack: 'Inter', sans-serif;
+  /* Font sizes */
+  --font-size-xsmall: 11px;
+  --font-size-small: 12px;
+  --font-size-large: 13px;
+  --font-size-xlarge: 14px;
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  /* Lineheight */
+  --font-line-height: 16px;
+  /* Use For xsmall, small font sizes */
+  --font-line-height-large: 24px;
+  /* Use For large, xlarge font sizes */
+  /* Letterspacing */
+  --font-letter-spacing-pos-xsmall: .005em;
+  --font-letter-spacing-neg-xsmall: .01em;
+  --font-letter-spacing-pos-small: 0;
+  --font-letter-spacing-neg-small: .005em;
+  --font-letter-spacing-pos-large: -.0025em;
+  --font-letter-spacing-neg-large: .0025em;
+  --font-letter-spacing-pos-xlarge: -.001em;
+  --font-letter-spacing-neg-xlarge: -.001em;
+  /* BORDER RADIUS */
+  --border-radius-small: 2px;
+  --border-radius-med: 5px;
+  --border-radius-large: 6px;
+  /* SHADOWS */
+  --shadow-hud: 0 5px 17px rgba(0, 0, 0, .2), 0 2px 7px rgba(0, 0, 0, .15);
+  --shadow-floating-window: 0 2px 14px rgba(0, 0, 0, .15);
+  /* SPACING + SIZING */
+  --size-xxxsmall: 4px;
+  --size-xxsmall: 8px;
+  --size-xsmall: 16px;
+  --size-small: 24px;
+  --size-medium: 32px;
+  --size-large: 40px;
+  --size-xlarge: 48px;
+  --size-xxlarge: 64px;
+  --size-xxxlarge: 80px;
+}
   * {
     box-sizing: border-box;
   }
   body {
+    background-color: var(--figma-color-bg);
+    color: var(--figma-color-text);
     display: flex;
     flex-direction: column;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -13,7 +93,15 @@
     gap: 8px;
   }
   textarea {
+    font-size: var(--font-size-xsmall);
+    font-family: Roboto Mono, Monaco ,Courier New, monospace;
     height: 100%;
+    background-color: var(--figma-color-bg);
+    color: var(--figma-color-text);
+    border: 1px solid var(--figma-color-border);
+  }
+  textarea:focus {
+    outline: 2px solid var(--figma-color-border-selected)
   }
   container {
     display: flex;
@@ -22,38 +110,94 @@
     gap: 16px;
     padding: 16px;
   }
+  .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-large);
+    color: var(--white);
+    flex-shrink: 0;
+    font-family: var(--font-stack);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--font-letter-spacing-neg-small);
+    line-height: var(--font-line-height);
+    height: var(--size-medium);
+    padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
+    text-decoration: none;
+    outline: none;
+    border: 2px solid transparent;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .button--primary {
+    background-color: var(--figma-color-bg-brand);
+  }
+
+  .button--primary:enabled:active,
+  .button--primary:enabled:focus {
+    border: 2px solid var(--black3);
+  }
+
+  .button--primary:disabled {
+    background-color: var(--black3);
+  }
+
+  .button--primary-destructive {
+    background-color: var(--red);
+  }
+
+  .button--primary-destructive:enabled:active,
+  .button--primary-destructive:enabled:focus {
+    border: 2px solid var(--black3);
+  }
+
+  .button--primary-destructive:disabled {
+    opacity: 0.3;
+  }
 </style>
 
 <container>
-  <textarea name="text" id="text" cols="30" rows="10">
+<textarea name="text" id="text" cols="30" rows="10">
 {
-	"Themes": {
-		"foo": {
-			"Dark": "#D8BFD8",
-			"Light": "#EE82EE",
-			"Midnight": "#6B8E23"
-		},
-		"bar": {
-			"Dark": "#40E0D033",
-			"Light": "#D2B48C",
-			"Midnight": "#F0E68C"
-		},
-		"faz": {
-			"Dark": "#1f1f1f",
-			"Light": "#FA8072",
-			"Midnight": "#8B4513"
-		}
-	}
-}
-</textarea
-  >
-  <button id="generate">Generate</button>
+  "Tokens": {
+    "button-primary-bg": {
+      "Dark": "#4338CA",
+      "Light": "#00000000"
+    },
+    "button-primary-bg-hover": {
+      "Dark": "#4F46E5",
+      "Light": "#4338CA14"
+    },
+    "button-primary-text": {
+      "Dark": "#FAFAFA",
+      "Light": "#4F46E5"
+    },
+    "button-primary-border": {
+      "Dark": "#00000000",
+      "Light": "#4338CA"
+    }
+  }
+}</textarea>
+  <button class="button button--primary" id="generate">Generate</button>
 </container>
 
 <script>
-  document.getElementById("generate").onclick = () => {
-    const text = document.getElementById("text");
-    const data = text.value;
-    parent.postMessage({ pluginMessage: { type: "generate", data } }, "*");
-  };
+document.getElementById("generate").onclick = () => {
+  const text = document.getElementById("text");
+  const data = text.value;
+  parent.postMessage({ pluginMessage: { type: "generate", data } }, "*");
+};
+
+onmessage = (event) => {
+  const message = event.data.pluginMessage;
+  if (message.type === "openURL") {
+    console.log('Opening URL');
+    console.log(message.url);
+    window.open(message.url);
+  }
+}
 </script>

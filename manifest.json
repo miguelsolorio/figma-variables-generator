@@ -1,13 +1,12 @@
 {
-  "name": "Variables Generator",
-  "id": "1316575614076516314",
+  "name": "Variable Builder",
+  "id": "1319728928151105267",
   "api": "1.0.0",
   "main": "code.js",
   "capabilities": [],
   "enableProposedApi": false,
   "editorType": [
-    "figma",
-    "figjam"
+    "figma"
   ],
   "ui": "ui.html",
   "networkAccess": {
