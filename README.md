@@ -11,15 +11,18 @@ Use the format below and always include a mode for each variable. Colors must be
 ```json
 {
   "$CollectionName": {
-    "$VariableName1": {
+    "$VariableName": {
       "$Mode": "$Hex",
       "$Mode": "$Hex"
     },
-    "$VariableName2": {
+    "$VariableName": {
       "$Mode": "$Hex",
       "$Mode": "$Hex"
     },
-    ...
+    "$VariableName": {
+      "$Mode": "$Hex",
+      "$Mode": "$Hex"
+    }
   }
 }
 ```
