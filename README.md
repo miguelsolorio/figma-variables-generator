@@ -1,40 +1,105 @@
-Below are the steps to get your plugin running. You can also find instructions at:
+# Variables Builder
 
-  https://www.figma.com/plugin-docs/plugin-quickstart-guide/
+![Cover](https://github.com/miguelsolorio/figma-variables-builder/blob/main/assets/cover.png?raw=true)
 
-This plugin template uses Typescript and NPM, two standard tools in creating JavaScript applications.
+A [Figma plugin](https://www.figma.com/community/plugin/1319728928151105267) for generating local variables using JSON
 
-First, download Node.js which comes with NPM. This will allow you to install TypeScript and other
-libraries. You can find the download link here:
+## How to use
 
-  https://nodejs.org/en/download/
+Use the format below and always include a mode for each variable. Colors must be in a hex format and can support alpha channels via 8 digits.
 
-Next, install TypeScript using the command:
+```json
+{
+  "$CollectionName": {
+    "$VariableName1": {
+      "$Mode": "$Hex",
+      "$Mode": "$Hex"
+    },
+    "$VariableName2": {
+      "$Mode": "$Hex",
+      "$Mode": "$Hex"
+    },
+    ...
+  }
+}
+```
 
-  npm install -g typescript
+- `$CollectionName` is the name of your collection
+- `$VariableName` is the name of your variable
+- `$Mode` is the name of your mode, each variable must contain the same modes
+- `$Hex` is the hex code of your color, supports 8-digit hex codes for transparency
 
-Finally, in the directory of your plugin, get the latest type definitions for the plugin API by running:
+### Example
 
-  npm install --save-dev @figma/plugin-typings
+```json
+{
+  "Tokens": {
+    "tab-activeBackground": {
+      "Dark": "#1f1f1f",
+      "Light": "#ffffff",
+      "Monokai": "#272822"
+    },
+    "tab-activeBorder": {
+      "Dark": "#1f1f1f",
+      "Light": "#f8f8f8",
+      "Monokai": "#00000000"
+    },
+    "tab-activeBorderTop": {
+      "Dark": "#0078d4",
+      "Light": "#005fb8",
+      "Monokai": "#00000000"
+    },
+    "tab-activeForeground": {
+      "Dark": "#ffffff",
+      "Light": "#3b3b3b",
+      "Monokai": "#ffffff"
+    },
+    "tab-border": {
+      "Dark": "#2b2b2b",
+      "Light": "#e5e5e5",
+      "Monokai": "#1e1f1c"
+    },
+    "tab-hoverBackground": {
+      "Dark": "#1f1f1f",
+      "Light": "#ffffff",
+      "Monokai": "#00000000"
+    },
+    "tab-inactiveBackground": {
+      "Dark": "#181818",
+      "Light": "#f8f8f8",
+      "Monokai": "#34352f"
+    },
+    "tab-inactiveForeground": {
+      "Dark": "#9d9d9d",
+      "Light": "#868686",
+      "Monokai": "#ccccc7"
+    },
+    "tab-lastPinnedBorder": {
+      "Dark": "#cccccc33",
+      "Light": "#d4d4d4",
+      "Monokai": "#414339"
+    },
+    "tab-unfocusedActiveBorder": {
+      "Dark": "#1f1f1f",
+      "Light": "#f8f8f8",
+      "Monokai": "#00000000"
+    },
+    "tab-unfocusedActiveBorderTop": {
+      "Dark": "#2b2b2b",
+      "Light": "#e5e5e5",
+      "Monokai": "#00000000"
+    },
+    "tab-unfocusedHoverBackground": {
+      "Dark": "#1f1f1f",
+      "Light": "#f8f8f8",
+      "Monokai": "#00000000"
+    }
+  }
+}
+```
 
-If you are familiar with JavaScript, TypeScript will look very familiar. In fact, valid JavaScript code
-is already valid Typescript code.
+## Run Plugin Locally
 
-TypeScript adds type annotations to variables. This allows code editors such as Visual Studio Code
-to provide information about the Figma API while you are writing code, as well as help catch bugs
-you previously didn't notice.
-
-For more information, visit https://www.typescriptlang.org/
-
-Using TypeScript requires a compiler to convert TypeScript (code.ts) into JavaScript (code.js)
-for the browser to run.
-
-We recommend writing TypeScript code using Visual Studio code:
-
-1. Download Visual Studio Code if you haven't already: https://code.visualstudio.com/.
-2. Open this directory in Visual Studio Code.
-3. Compile TypeScript to JavaScript: Run the "Terminal > Run Build Task..." menu item,
-    then select "npm: watch". You will have to do this again every time
-    you reopen Visual Studio Code.
-
-That's it! Visual Studio Code will regenerate the JavaScript file every time you save.
+1. Clone this repository
+2. Install dependencies with `npm install`
+3. Build the plugin with `npm run build` or `npm run watch`
