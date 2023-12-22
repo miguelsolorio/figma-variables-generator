@@ -37,39 +37,61 @@ figma.ui.onmessage = msg => {
 
             if (jsonObject[theme].hasOwnProperty(variable)) {
 
+              // if variable only has a single mode, add it to the default mode
               let modes = jsonObject[theme][variable]
-              let count = 0
-
-              const variableItem = figma.variables.createVariable(
-                variable,
-                collection.id,
-                "COLOR"
-              )
-
-              for (let mode in modes) {
-
-                // rename first mode
-                console.log(collection.modes)
-                if (count == 0) {
-                  console.log('✨ Renaming first mode')
-                  let currentModeId = collection.modes[count].modeId
-                  collection.renameMode(currentModeId, mode)
-                  variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
-                }
-
-                // // add new mode
-                console.log(`Count is ${count}`)
-                if (!collection.modes[count]) {
-                  console.log('✨ Adding mode')
-                  collection.addMode(mode)
-                }
-
-                let currentModeId = collection.modes[count].modeId
-                variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
-
-                console.log(`↳ 🌓 ${mode}: ${modes[mode]}`)
-                count++
+              if (typeof modes !== 'object') {
+                console.log('✨ Adding to default mode')
+                let mode = Object.keys(jsonObject)
+                let color = rgba(jsonObject[theme][variable])
+                let defaultMode = collection.modes[0].modeId
+                const variableItem = figma.variables.createVariable(
+                  variable,
+                  collection.id,
+                  "COLOR"
+                )
+                variableItem.setValueForMode(defaultMode, color)
               }
+
+              // if variables has multiple modes, add them to the collection and rename modes
+              else {
+
+                let modes = jsonObject[theme][variable]
+                let count = 0
+
+                const variableItem = figma.variables.createVariable(
+                  variable,
+                  collection.id,
+                  "COLOR"
+                )
+
+                for (let mode in modes) {
+
+                  // rename first mode
+                  console.log(collection.modes)
+                  if (count == 0) {
+                    console.log('✨ Renaming first mode')
+                    let currentModeId = collection.modes[count].modeId
+                    collection.renameMode(currentModeId, mode)
+                    variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
+                  }
+
+                  // // add new mode
+                  console.log(`Count is ${count}`)
+                  if (!collection.modes[count]) {
+                    console.log('✨ Adding mode')
+                    collection.addMode(mode)
+                  }
+
+                  let currentModeId = collection.modes[count].modeId
+                  variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
+
+                  console.log(`↳ 🌓 ${mode}: ${modes[mode]}`)
+                  count++
+                }
+
+              }
+
+
             }
           }
         }

@@ -27,6 +27,18 @@ Use the format below and always include a mode for each variable. Colors must be
 }
 ```
 
+If you only have a single mode, you can use the short format below and they will be added to the default mode:
+
+```json
+{
+  "$CollectionName": {
+    "$VariableName": "$Hex",
+    "$VariableName": "$Hex",
+    "$VariableName": "$Hex"
+  }
+}
+```
+
 - `$CollectionName` is the name of your collection
 - `$VariableName` is the name of your variable
 - `$Mode` is the name of your mode, each variable must contain the same modes
