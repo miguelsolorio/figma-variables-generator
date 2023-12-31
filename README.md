@@ -1,6 +1,6 @@
-# Variables Builder
+# Figma Variables Generator
 
-![Cover](https://github.com/miguelsolorio/figma-variables-builder/blob/main/assets/cover.png?raw=true)
+![Cover](https://github.com/miguelsolorio/figma-variables-generator/blob/main/assets/cover.png?raw=true)
 
 A [Figma plugin](https://www.figma.com/community/plugin/1319728928151105267) for generating local variables using JSON
 
