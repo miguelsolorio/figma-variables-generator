@@ -57,7 +57,7 @@ figma.ui.onmessage = msg => {
 
               // if variable only has a single mode, add it to the default mode
               let modes = jsonObject[theme][variable]
-              if (typeof modes !== 'object' && collection !== null) {
+              if (typeof modes !== 'object') {
                 console.log('✨ Adding to default mode');
                 let mode = Object.keys(jsonObject);
                 let color = rgba(jsonObject[theme][variable]);
