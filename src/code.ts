@@ -3,6 +3,16 @@ figma.showUI(__html__, { themeColors: true, width: 450, height: 400 });
 console.clear();
 const rgba = figma.util.rgba
 
+let currentCollectionsDictionary: { name: string; id: string; }[] = []
+let currentCollections = figma.variables.getLocalVariableCollections();
+
+currentCollections.forEach((collections) => {
+  console.log(`📦 ${collections.name}`)
+  currentCollectionsDictionary.push({ name: collections.name, id: collections.id })
+});
+
+figma.ui.postMessage({ type: 'currentCollections', data: currentCollectionsDictionary })
+
 
 figma.ui.onmessage = msg => {
 
@@ -28,7 +38,15 @@ figma.ui.onmessage = msg => {
     try {
       for (let theme in jsonObject) {
         console.log(`🎨 ${theme}`)
-        const collection = figma.variables.createVariableCollection(theme);
+
+        let collection: VariableCollection
+        if(msg.collection !== 'default'){
+          collection = figma.variables.getVariableCollectionById(msg.collection) as VariableCollection;
+          console.log(`Existing Collection is ${collection.name}`)
+          console.log(collection)
+        } else {
+          collection = figma.variables.createVariableCollection(theme);
+        }
 
         if (jsonObject.hasOwnProperty(theme)) {
 
@@ -39,17 +57,17 @@ figma.ui.onmessage = msg => {
 
               // if variable only has a single mode, add it to the default mode
               let modes = jsonObject[theme][variable]
-              if (typeof modes !== 'object') {
-                console.log('✨ Adding to default mode')
-                let mode = Object.keys(jsonObject)
-                let color = rgba(jsonObject[theme][variable])
-                let defaultMode = collection.modes[0].modeId
+              if (typeof modes !== 'object' && collection !== null) {
+                console.log('✨ Adding to default mode');
+                let mode = Object.keys(jsonObject);
+                let color = rgba(jsonObject[theme][variable]);
+                let defaultMode = collection.modes[0].modeId;
                 const variableItem = figma.variables.createVariable(
                   variable,
                   collection.id,
                   "COLOR"
-                )
-                variableItem.setValueForMode(defaultMode, color)
+                );
+                variableItem.setValueForMode(defaultMode, color);
               }
 
               // if variables has multiple modes, add them to the collection and rename modes

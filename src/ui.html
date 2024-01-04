@@ -92,13 +92,26 @@
     height: 100%;
     gap: 8px;
   }
-  textarea {
+  select,textarea {
     font-size: var(--font-size-xsmall);
     font-family: Roboto Mono, Monaco ,Courier New, monospace;
-    height: 100%;
     background-color: var(--figma-color-bg);
     color: var(--figma-color-text);
     border: 1px solid var(--figma-color-border);
+  }
+  select {
+    padding: 8px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: var(--border-radius-med);
+    background-image: url("data:image/svg+xml,%3Csvg class='svg' xmlns='http://www.w3.org/2000/svg' width='8' height='7' viewBox='0 0 8 7'%3E%3Cpath fill='%23000' fill-opacity='1' fill-rule='evenodd' stroke='none' d='m3.646 5.354-3-3 .708-.708L4 4.293l2.646-2.647.708.708-3 3L4 5.707l-.354-.353z'%3E%3C/path%3E%3C/svg%3E"); /* your base64-encoded SVG */
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 30px;
+  }
+  textarea {
+    height: 100%;
   }
   textarea:focus {
     outline: 2px solid var(--figma-color-border-selected)
@@ -182,22 +195,42 @@
     }
   }
 }</textarea>
+  <select name="collection" id="collection">
+    <option value="default">New Collection</option>
+  </select>
   <button class="button button--primary" id="generate">Generate</button>
 </container>
 
 <script>
+const select = document.getElementById("collection");
+
 document.getElementById("generate").onclick = () => {
   const text = document.getElementById("text");
   const data = text.value;
-  parent.postMessage({ pluginMessage: { type: "generate", data } }, "*");
+  parent.postMessage({ pluginMessage: { type: "generate", collection: select.value, data } }, "*");
 };
 
 onmessage = (event) => {
   const message = event.data.pluginMessage;
+
+  // Open URL
   if (message.type === "openURL") {
     console.log('Opening URL');
     console.log(message.url);
     window.open(message.url);
+  }
+
+  // Get Current Collections
+  else if (message.type === "currentCollections") {
+    console.log(message.data);
+    if (message.data.length > 0) {
+      message.data.forEach((collection) => {
+        const option = document.createElement("option");
+        option.value = collection.id;
+        option.text = collection.name;
+        select.appendChild(option);
+      });
+    }
   }
 }
 </script>
