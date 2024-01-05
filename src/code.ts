@@ -6,7 +6,7 @@ const rgba = figma.util.rgba
 let currentCollectionsDictionary: { name: string; id: string; }[] = []
 let currentCollections
 
-function getcurrentCollections(){
+function getcurrentCollections() {
   currentCollections = figma.variables.getLocalVariableCollections();
   currentCollections.forEach((collections) => {
     currentCollectionsDictionary.push({ name: collections.name, id: collections.id })
@@ -60,17 +60,49 @@ figma.ui.onmessage = msg => {
 
           // if variable only has a single mode, add it to the default mode
           let modes = jsonObject[variable]
+          let colorRaw = jsonObject[variable];
+
           if (typeof modes !== 'object') {
             console.log('✨ Adding to default mode');
             let mode = Object.keys(jsonObject);
-            let color = rgba(jsonObject[variable]);
-            let defaultMode = collection.modes[0].modeId;
-            const variableItem = figma.variables.createVariable(
-              variable,
-              collection.id,
-              "COLOR"
-            );
-            variableItem.setValueForMode(defaultMode, color);
+            let color: RGBA
+
+            // Aliasing
+            if (colorRaw.startsWith('$')) {
+              let aliasName = colorRaw.split('$').pop();
+              console.log(`👽 Attempting to find alias ${aliasName}`)
+              let getVariables = figma.variables.getLocalVariables();
+              let foundVariable = getVariables.find(variable => variable.name === aliasName);
+
+              // Check if the alias was found
+              if (foundVariable) {
+                console.log("Found variable is", foundVariable);
+
+                let defaultMode = collection.modes[0].modeId;
+                const variableItem = figma.variables.createVariable(
+                  variable,
+                  collection.id,
+                  "COLOR"
+                );
+                variableItem.setValueForMode(defaultMode, {
+                  type: 'VARIABLE_ALIAS',
+                  id: foundVariable.id
+                });
+              } else {
+                console.log(`🚨 Error: Variable ${aliasName} not found`);
+                figma.notify(`🚨 Error: Variable $${aliasName} not found`)
+              }
+
+            } else {
+              color = rgba(jsonObject[variable]);
+              let defaultMode = collection.modes[0].modeId;
+              const variableItem = figma.variables.createVariable(
+                variable,
+                collection.id,
+                "COLOR"
+              );
+              variableItem.setValueForMode(defaultMode, color);
+            }
           }
 
           // if variables has multiple modes, add them to the collection and rename modes
@@ -93,10 +125,30 @@ figma.ui.onmessage = msg => {
                 console.log('✨ Renaming first mode')
                 let currentModeId = collection.modes[count].modeId
                 collection.renameMode(currentModeId, mode)
-                variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
+                if (modes[mode].startsWith('$')) {
+                  let aliasName = modes[mode].split('$').pop();
+                  let getVariables = figma.variables.getLocalVariables();
+                  let foundVariable = getVariables.find(variable => variable.name === aliasName);
+
+                  // Check if the alias was found
+                  if (foundVariable) {
+                    console.log("Found variable is", foundVariable);
+
+                    let defaultMode = collection.modes[0].modeId;
+                    variableItem.setValueForMode(defaultMode, {
+                      type: 'VARIABLE_ALIAS',
+                      id: foundVariable.id
+                    });
+                  } else {
+                    console.log(`🚨 Error: Variable ${aliasName} not found`);
+                    figma.notify(`🚨 Error: Variable $${aliasName} not found`)
+                  }
+                } else {
+                  variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
+                }
               }
 
-              // // add new mode
+              // add new mode
               console.log(`Count is ${count}`)
               if (!collection.modes[count]) {
                 console.log('✨ Adding mode')
@@ -104,7 +156,25 @@ figma.ui.onmessage = msg => {
               }
 
               let currentModeId = collection.modes[count].modeId
-              variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
+              if (modes[mode].startsWith('$')) {
+                let aliasName = modes[mode].split('$').pop();
+                let getVariables = figma.variables.getLocalVariables();
+                let foundVariable = getVariables.find(variable => variable.name === aliasName);
+
+                // Check if the alias was found
+                if (foundVariable) {
+                  console.log("Found variable is", foundVariable);
+                  variableItem.setValueForMode(currentModeId, {
+                    type: 'VARIABLE_ALIAS',
+                    id: foundVariable.id
+                  });
+                } else {
+                  console.log(`🚨 Error: Variable ${aliasName} not found`);
+                  figma.notify(`🚨 Error: Variable $${aliasName} not found`)
+                }
+              } else {
+                variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
+              }
 
               console.log(`↳ 🌓 ${mode}: ${modes[mode]}`)
               count++
@@ -127,7 +197,7 @@ figma.ui.onmessage = msg => {
       let message = error.message;
       // remove everything before :
       message = message.split(': ').pop();
-      if(message == 'duplicate variable name'){
+      if (message == 'duplicate variable name') {
         figma.notify(`🚨 Error: Variable names must be unique within a collection`)
       } else {
         figma.notify(`🚨 Error: ${message}`)
