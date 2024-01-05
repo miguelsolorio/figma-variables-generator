@@ -1,5 +1,5 @@
 {
-  "name": "Variables Builder",
+  "name": "Variables Generator",
   "id": "1319728928151105267",
   "api": "1.0.0",
   "main": "dist/code.js",

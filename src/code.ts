@@ -1,22 +1,27 @@
-figma.showUI(__html__, { themeColors: true, width: 450, height: 400 });
+figma.showUI(__html__, { themeColors: true, width: 350, height: 500 });
 
 console.clear();
 const rgba = figma.util.rgba
 
 let currentCollectionsDictionary: { name: string; id: string; }[] = []
-let currentCollections = figma.variables.getLocalVariableCollections();
+let currentCollections
 
-currentCollections.forEach((collections) => {
-  console.log(`📦 ${collections.name}`)
-  currentCollectionsDictionary.push({ name: collections.name, id: collections.id })
-});
+function getcurrentCollections(){
+  currentCollections = figma.variables.getLocalVariableCollections();
+  currentCollections.forEach((collections) => {
+    currentCollectionsDictionary.push({ name: collections.name, id: collections.id })
+  });
+  console.log(`📦 Current Collections:`)
+  console.log(currentCollectionsDictionary)
+}
+getcurrentCollections()
 
 figma.ui.postMessage({ type: 'currentCollections', data: currentCollectionsDictionary })
 
 
 figma.ui.onmessage = msg => {
 
-  if (msg.type === 'generate') {
+  if (msg.action === 'generate') {
 
     // validate JSON
     try {
@@ -35,97 +40,98 @@ figma.ui.onmessage = msg => {
     }
 
     const jsonObject = JSON.parse(msg.data);
+    const theme = msg.collection;
+    let generatedVariables = 0
+
+    let collection: VariableCollection
+    if (msg.type == 'existing') {
+      collection = figma.variables.getVariableCollectionById(msg.collection) as VariableCollection;
+      console.log(`Existing Collection is ${collection.name}`)
+      console.log(collection)
+    } else {
+      collection = figma.variables.createVariableCollection(theme);
+    }
+
     try {
-      for (let theme in jsonObject) {
-        console.log(`🎨 ${theme}`)
+      for (let variable in jsonObject) {
+        console.log(`💎 ${variable}`)
 
-        let collection: VariableCollection
-        if(msg.collection !== 'default'){
-          collection = figma.variables.getVariableCollectionById(msg.collection) as VariableCollection;
-          console.log(`Existing Collection is ${collection.name}`)
-          console.log(collection)
-        } else {
-          collection = figma.variables.createVariableCollection(theme);
-        }
+        if (jsonObject.hasOwnProperty(variable)) {
 
-        if (jsonObject.hasOwnProperty(theme)) {
-
-          for (let variable in jsonObject[theme]) {
-            console.log(`💎 ${variable}`)
-
-            if (jsonObject[theme].hasOwnProperty(variable)) {
-
-              // if variable only has a single mode, add it to the default mode
-              let modes = jsonObject[theme][variable]
-              if (typeof modes !== 'object') {
-                console.log('✨ Adding to default mode');
-                let mode = Object.keys(jsonObject);
-                let color = rgba(jsonObject[theme][variable]);
-                let defaultMode = collection.modes[0].modeId;
-                const variableItem = figma.variables.createVariable(
-                  variable,
-                  collection.id,
-                  "COLOR"
-                );
-                variableItem.setValueForMode(defaultMode, color);
-              }
-
-              // if variables has multiple modes, add them to the collection and rename modes
-              else {
-
-                let modes = jsonObject[theme][variable]
-                let count = 0
-
-                const variableItem = figma.variables.createVariable(
-                  variable,
-                  collection.id,
-                  "COLOR"
-                )
-
-                for (let mode in modes) {
-
-                  // rename first mode
-                  console.log(collection.modes)
-                  if (count == 0) {
-                    console.log('✨ Renaming first mode')
-                    let currentModeId = collection.modes[count].modeId
-                    collection.renameMode(currentModeId, mode)
-                    variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
-                  }
-
-                  // // add new mode
-                  console.log(`Count is ${count}`)
-                  if (!collection.modes[count]) {
-                    console.log('✨ Adding mode')
-                    collection.addMode(mode)
-                  }
-
-                  let currentModeId = collection.modes[count].modeId
-                  variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
-
-                  console.log(`↳ 🌓 ${mode}: ${modes[mode]}`)
-                  count++
-                }
-
-              }
-
-
-            }
+          // if variable only has a single mode, add it to the default mode
+          let modes = jsonObject[variable]
+          if (typeof modes !== 'object') {
+            console.log('✨ Adding to default mode');
+            let mode = Object.keys(jsonObject);
+            let color = rgba(jsonObject[variable]);
+            let defaultMode = collection.modes[0].modeId;
+            const variableItem = figma.variables.createVariable(
+              variable,
+              collection.id,
+              "COLOR"
+            );
+            variableItem.setValueForMode(defaultMode, color);
           }
-        }
-        figma.notify(`✅ Generated ${collection.name} collection with ${collection.variableIds.length} variables`)
-      }
-    } catch (error: any) {
-      let message = error.message
 
-      if (message === 'in addMode: Limited to 1 modes only') {
-        figma.notify(`🚨 Error: Your Figma license only allows 1 mode`)
+          // if variables has multiple modes, add them to the collection and rename modes
+          else {
+
+            let modes = jsonObject[variable]
+            let count = 0
+
+            const variableItem = figma.variables.createVariable(
+              variable,
+              collection.id,
+              "COLOR"
+            )
+
+            for (let mode in modes) {
+
+              // rename first mode
+              console.log(collection.modes)
+              if (count == 0) {
+                console.log('✨ Renaming first mode')
+                let currentModeId = collection.modes[count].modeId
+                collection.renameMode(currentModeId, mode)
+                variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
+              }
+
+              // // add new mode
+              console.log(`Count is ${count}`)
+              if (!collection.modes[count]) {
+                console.log('✨ Adding mode')
+                collection.addMode(mode)
+              }
+
+              let currentModeId = collection.modes[count].modeId
+              variableItem.setValueForMode(currentModeId, rgba(modes[mode]))
+
+              console.log(`↳ 🌓 ${mode}: ${modes[mode]}`)
+              count++
+            }
+
+          }
+
+          generatedVariables++
+
+
+        }
+      }
+
+      // Done
+      figma.notify(`✅ Generated ${collection.name} collection with ${generatedVariables} variables`)
+
+      getcurrentCollections()
+      figma.ui.postMessage({ type: 'complete', data: currentCollectionsDictionary })
+    } catch (error: any) {
+      let message = error.message;
+      // remove everything before :
+      message = message.split(': ').pop();
+      if(message == 'duplicate variable name'){
+        figma.notify(`🚨 Error: Variable names must be unique within a collection`)
       } else {
         figma.notify(`🚨 Error: ${message}`)
       }
-
-      console.log(error)
-
     }
 
   }

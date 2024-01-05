@@ -92,16 +92,22 @@
     height: 100%;
     gap: 8px;
   }
-  select,textarea {
+  select,textarea, input, form {
     font-size: var(--font-size-xsmall);
     font-family: Roboto Mono, Monaco ,Courier New, monospace;
     background-color: var(--figma-color-bg);
     color: var(--figma-color-text);
+  }
+  select,textarea, input {
     border: 1px solid var(--figma-color-border);
   }
-  select {
+  select, input[type=text] {
+    margin: 0;
     padding: 8px;
-    -webkit-appearance: none;
+    min-height: 34px;
+  }
+  select {
+   -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     border-radius: var(--border-radius-med);
@@ -115,6 +121,16 @@
   }
   textarea:focus {
     outline: 2px solid var(--figma-color-border-selected)
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+  form .disabled {
+    opacity: 0.3;
+    pointer-events: none;
   }
   container {
     display: flex;
@@ -176,39 +192,72 @@
 <container>
 <textarea name="text" id="text" cols="30" rows="10">
 {
-  "Tokens": {
-    "button-primary-bg": {
-      "Dark": "#4338CA",
-      "Light": "#00000000"
-    },
-    "button-primary-bg-hover": {
-      "Dark": "#4F46E5",
-      "Light": "#4338CA14"
-    },
-    "button-primary-text": {
-      "Dark": "#FAFAFA",
-      "Light": "#4F46E5"
-    },
-    "button-primary-border": {
-      "Dark": "#00000000",
-      "Light": "#4338CA"
-    }
-  }
+  "black": "#0e1112",
+  "white": "#d4d7d6",
+  "grey": "#4d5a5e",
+  "blue": "#519aba",
+  "green": "#8dc149",
+  "orange": "#e37933",
+  "pink": "#f55385",
+  "purple": "#a074c4",
+  "red": "#cc3e44",
+  "steel": "#7494a3",
+  "yellow": "#cbcb41"
 }</textarea>
-  <select name="collection" id="collection">
-    <option value="default">New Collection</option>
+
+  <form id="collection-option">
+    <group id="new-collection-group">
+      <input type="radio" id="new-collection-option" name="collectionGroup" value="new-collection-option" checked>
+      <label for="new-collection-option">Create new collection</label>
+    </group>
+    <group id="existing-collection-group">
+      <input type="radio" id="existing-collection-option" name="collectionGroup" value="existing-collection-option">
+      <label for="existing-collection-option">Add to existing collection</label>
+    </group>
+  </form>
+
+  <select name="existing-collection" id="existing-collection">
   </select>
+
+  <input id="new-collection" type="text" value="Collection Name" />
+
   <button class="button button--primary" id="generate">Generate</button>
 </container>
 
 <script>
-const select = document.getElementById("collection");
+const select = document.getElementById("existing-collection");
+const newCollection = document.getElementById('new-collection')
+const existingCollection = document.getElementById('existing-collection')
 
+// Generate
 document.getElementById("generate").onclick = () => {
   const text = document.getElementById("text");
   const data = text.value;
-  parent.postMessage({ pluginMessage: { type: "generate", collection: select.value, data } }, "*");
+  let collection = ''
+  let type = ''
+
+  if(newCollection.style.display === 'block'){
+    collection = newCollection.value;
+    type = "new";
+  } else {
+    collection = select.value;
+    type = "existing";
+  }
+  parent.postMessage({ pluginMessage: { action: "generate", type: type, collection: collection, data } }, "*");
 };
+
+// Only show radio button options
+function toggleCollectionOptions(){
+  let selectedRadioButton = document.querySelector('input:checked');
+  let selectedRadioButtonName = selectedRadioButton.value;
+
+  let name = selectedRadioButtonName.replace('-option', '');
+
+  newCollection.style.display = 'none';
+  existingCollection.style.display = 'none';
+
+  document.getElementById(name).style.display = 'block';
+}
 
 onmessage = (event) => {
   const message = event.data.pluginMessage;
@@ -221,8 +270,7 @@ onmessage = (event) => {
   }
 
   // Get Current Collections
-  else if (message.type === "currentCollections") {
-    console.log(message.data);
+  else if (message.type === "currentCollections" || message.type === "complete") {
     if (message.data.length > 0) {
       message.data.forEach((collection) => {
         const option = document.createElement("option");
@@ -230,7 +278,23 @@ onmessage = (event) => {
         option.text = collection.name;
         select.appendChild(option);
       });
+    } else {
+      // disable exisiting collection option
+      document.getElementById('existing-collection-group').classList.add('disabled');
+    }
+
+    if(message.type == 'complete'){
+      console.log('Complete, re-running');
+      document.getElementById('existing-collection-group').classList.remove('disabled');
+
     }
   }
+
+  document.getElementById('collection-option').addEventListener('change', function() {
+    toggleCollectionOptions();
+  });
+  toggleCollectionOptions();
+
+
 }
 </script>
