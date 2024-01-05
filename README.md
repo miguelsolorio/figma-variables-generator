@@ -8,7 +8,7 @@ A [Figma plugin](https://www.figma.com/community/plugin/1319728928151105267) for
 
 Use the format below and always include a mode for each variable. Colors must be in a hex format and can support alpha channels via 8 digits.
 
-## Single Mode
+### Single Mode
 
 ```json
 {
@@ -37,7 +37,20 @@ Use the format below and always include a mode for each variable. Colors must be
 }
 ```
 
+### Aliasing
+
+You can use aliasing across your local variables as long as their names are unique.
+
+```json
+{
+  "$VariableName": "$VariableAlias",
+  "$VariableName": "$VariableAlias",
+  "$VariableName": "$VariableAlias"
+}
+```
+
 - `$VariableName` is the name of your variable and must be unique in the collection
+- `$VariableAlias` is the name of the alias you are aliasing, be sure to include the `$` to enable aliasing
 - `$Mode` is the name of your mode, each variable must contain the same modes
 - `$Hex` is the hex code of your color, supports 8-digit hex codes for transparency
 
@@ -89,41 +102,30 @@ Multiple modes that use 8-digit hex codes:
     "Dark": "#2b2b2b",
     "Light": "#e5e5e5",
     "Monokai": "#1e1f1c"
-  },
-  "tab-hoverBackground": {
-    "Dark": "#1f1f1f",
-    "Light": "#ffffff",
-    "Monokai": "#00000000"
-  },
-  "tab-inactiveBackground": {
-    "Dark": "#181818",
-    "Light": "#f8f8f8",
-    "Monokai": "#34352f"
-  },
-  "tab-inactiveForeground": {
-    "Dark": "#9d9d9d",
-    "Light": "#868686",
-    "Monokai": "#ccccc7"
-  },
-  "tab-lastPinnedBorder": {
-    "Dark": "#cccccc33",
-    "Light": "#d4d4d4",
-    "Monokai": "#414339"
-  },
-  "tab-unfocusedActiveBorder": {
-    "Dark": "#1f1f1f",
-    "Light": "#f8f8f8",
-    "Monokai": "#00000000"
-  },
-  "tab-unfocusedActiveBorderTop": {
-    "Dark": "#2b2b2b",
-    "Light": "#e5e5e5",
-    "Monokai": "#00000000"
-  },
-  "tab-unfocusedHoverBackground": {
-    "Dark": "#1f1f1f",
-    "Light": "#f8f8f8",
-    "Monokai": "#00000000"
+  }
+}
+```
+
+Using aliasing across collections:
+
+`Colors` collection:
+
+```json
+{
+  "black": "#0e1112",
+  "white": "#d4d7d6",
+  "grey": "#4d5a5e"
+}
+```
+
+`Tokens` collection that references `Colors` variables:
+
+```json
+{
+  "button": {
+    "Dark": "$black",
+    "Light": "$white",
+    "Monokai": "$grey"
   }
 }
 ```
