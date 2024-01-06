@@ -272,6 +272,7 @@ onmessage = (event) => {
   // Get Current Collections
   else if (message.type === "currentCollections" || message.type === "complete") {
     if (message.data.length > 0) {
+      select.innerHTML = ''; // clear options
       message.data.forEach((collection) => {
         const option = document.createElement("option");
         option.value = collection.id;
