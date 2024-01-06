@@ -4,6 +4,10 @@
 
 A [Figma plugin](https://www.figma.com/community/plugin/1319728928151105267) for generating local variables using JSON
 
+## Demo
+
+[![Demo video](https://github.com/miguelsolorio/figma-variables-generator/blob/main/assets/demo.png?raw=true)](https://www.youtube.com/watch?v=WiIIBhDmom0)
+
 ## How to use
 
 Use the format below and always include a mode for each variable. Colors must be in a hex format and can support alpha channels via 8 digits.

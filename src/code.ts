@@ -6,7 +6,9 @@ const rgba = figma.util.rgba
 let currentCollectionsDictionary: { name: string; id: string; }[] = []
 let currentCollections
 
+
 function getcurrentCollections() {
+  currentCollectionsDictionary = [] // clear collections
   currentCollections = figma.variables.getLocalVariableCollections();
   currentCollections.forEach((collections) => {
     currentCollectionsDictionary.push({ name: collections.name, id: collections.id })
